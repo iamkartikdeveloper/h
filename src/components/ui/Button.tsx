@@ -30,17 +30,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20 focus:ring-indigo-500 border border-indigo-500/30',
+        'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm focus:ring-indigo-500 border border-indigo-600',
       secondary:
-        'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-700/80 focus:ring-slate-400',
+        'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200 focus:ring-slate-400',
       outline:
-        'bg-transparent border border-slate-700 text-slate-200 hover:bg-slate-800/80 hover:text-white focus:ring-slate-400',
+        'bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-400 focus:ring-indigo-500 shadow-2xs',
       ghost:
-        'bg-transparent hover:bg-slate-800/60 text-slate-300 hover:text-white focus:ring-slate-400',
+        'bg-transparent hover:bg-slate-100 text-slate-700 hover:text-slate-900 focus:ring-slate-300',
       danger:
-        'bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/20 focus:ring-rose-500 border border-rose-500/30',
+        'bg-rose-600 hover:bg-rose-700 text-white shadow-sm focus:ring-rose-500 border border-rose-600',
       glow:
-        'bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-500 text-white font-semibold hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] focus:ring-indigo-400 border border-white/20',
+        'bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-md hover:shadow-indigo-500/25 focus:ring-indigo-500 border border-indigo-600',
     };
 
     const sizes = {

@@ -158,42 +158,42 @@ export default function AdminSettingsPage() {
   };
 
   if (loading) {
-    return <div className="py-12 text-center text-xs text-slate-400">Loading settings...</div>;
+    return <div className="py-12 text-center text-xs text-slate-500">Loading settings...</div>;
   }
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between pb-6 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-6 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Portfolio &amp; Website Settings
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
             Update your public developer identity, bio, social presence, and homepage announcements.
           </p>
         </div>
       </div>
 
       {successMsg && (
-        <div className="flex items-center gap-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
+        <div className="flex items-center gap-2 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
           <span>Website &amp; profile settings updated successfully!</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="flex items-center gap-2 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-medium">
-          <AlertCircle className="w-4 h-4 shrink-0" />
+        <div className="flex items-center gap-2 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
           <span>{errorMsg}</span>
         </div>
       )}
 
       <form onSubmit={handleSave} className="space-y-8">
         {/* Profile Card */}
-        <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <User className="w-4 h-4 text-indigo-400" />
+        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <User className="w-4 h-4 text-indigo-600" />
             <span>Developer Profile</span>
           </h2>
 
@@ -227,9 +227,9 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Social Links */}
-        <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <YouTubeIcon className="w-4 h-4 text-red-500" />
+        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <YouTubeIcon className="w-4 h-4 text-red-600" />
             <span>Social &amp; Contact Links</span>
           </h2>
 
@@ -275,9 +275,9 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Homepage & Content Config */}
-        <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-sky-400" />
+        <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-indigo-600" />
             <span>Homepage Copy &amp; Verified Stats</span>
           </h2>
 

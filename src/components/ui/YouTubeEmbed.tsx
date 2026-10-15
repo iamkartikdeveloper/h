@@ -22,12 +22,12 @@ export function YouTubeEmbed({ urlOrId, title = 'YouTube video tutorial', classN
     return (
       <div
         className={cn(
-          'w-full aspect-video rounded-2xl bg-slate-900 border border-slate-800 flex flex-col items-center justify-center p-6 text-center text-slate-400',
+          'w-full aspect-video rounded-2xl bg-slate-100 border border-slate-200 flex flex-col items-center justify-center p-6 text-center text-slate-600',
           className
         )}
       >
         <AlertCircle className="w-10 h-10 text-amber-500 mb-2" />
-        <p className="text-sm font-medium text-slate-300">Video Walkthrough Not Available</p>
+        <p className="text-sm font-semibold text-slate-800">Video Walkthrough Not Available</p>
         <p className="text-xs text-slate-500 mt-1 max-w-sm">
           Please refer to the detailed written implementation steps and source code below.
         </p>
@@ -41,7 +41,7 @@ export function YouTubeEmbed({ urlOrId, title = 'YouTube video tutorial', classN
   return (
     <div
       className={cn(
-        'relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-slate-800/80 shadow-2xl group',
+        'relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-md group',
         className
       )}
     >

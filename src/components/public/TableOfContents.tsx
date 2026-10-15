@@ -50,29 +50,29 @@ export function TableOfContents({ items }: TableOfContentsProps) {
   return (
     <>
       {/* Mobile Collapsible TOC */}
-      <div className="lg:hidden w-full mb-8 rounded-xl border border-slate-800 bg-slate-900/90 backdrop-blur-md overflow-hidden">
+      <div className="lg:hidden w-full mb-8 rounded-xl border border-slate-200 bg-white shadow-2xs overflow-hidden">
         <button
           onClick={() => setIsOpenMobile(!isOpenMobile)}
-          className="w-full flex items-center justify-between p-4 text-left font-medium text-slate-200"
+          className="w-full flex items-center justify-between p-4 text-left font-medium text-slate-800"
         >
           <div className="flex items-center gap-2">
-            <List className="w-4 h-4 text-indigo-400" />
-            <span className="text-sm font-semibold">Table of Contents</span>
+            <List className="w-4 h-4 text-indigo-600" />
+            <span className="text-sm font-bold">Table of Contents</span>
           </div>
           <ChevronDown
-            className={cn('w-4 h-4 text-slate-400 transition-transform duration-200', isOpenMobile && 'rotate-180')}
+            className={cn('w-4 h-4 text-slate-500 transition-transform duration-200', isOpenMobile && 'rotate-180')}
           />
         </button>
         {isOpenMobile && (
-          <nav className="p-4 pt-0 border-t border-slate-800/60 space-y-1">
+          <nav className="p-4 pt-0 border-t border-slate-100 space-y-1">
             {items.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToHeading(item.id)}
                 className={cn(
                   'block w-full text-left py-1.5 text-xs transition-colors rounded-lg px-2',
-                  item.level === 3 ? 'pl-4 text-slate-400' : 'text-slate-300 font-medium',
-                  activeId === item.id ? 'bg-indigo-500/10 text-indigo-400 font-semibold' : 'hover:text-white'
+                  item.level === 3 ? 'pl-4 text-slate-500' : 'text-slate-700 font-medium',
+                  activeId === item.id ? 'bg-indigo-50 text-indigo-700 font-bold' : 'hover:bg-slate-50 hover:text-slate-900'
                 )}
               >
                 {item.text}
@@ -84,10 +84,10 @@ export function TableOfContents({ items }: TableOfContentsProps) {
 
       {/* Desktop Sticky Sidebar TOC */}
       <div className="hidden lg:block sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-4">
-        <div className="p-5 rounded-2xl border border-slate-800/80 bg-slate-900/60 backdrop-blur-xl">
-          <div className="flex items-center gap-2 pb-3 mb-3 border-b border-slate-800 text-slate-200">
-            <List className="w-4 h-4 text-indigo-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-300">On this page</span>
+        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-2xs">
+          <div className="flex items-center gap-2 pb-3 mb-3 border-b border-slate-100 text-slate-800">
+            <List className="w-4 h-4 text-indigo-600" />
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-700">On this page</span>
           </div>
           <nav className="space-y-1">
             {items.map((item) => (
@@ -96,10 +96,10 @@ export function TableOfContents({ items }: TableOfContentsProps) {
                 onClick={() => scrollToHeading(item.id)}
                 className={cn(
                   'block w-full text-left py-1.5 text-xs transition-all duration-200 rounded-lg px-2.5 leading-relaxed cursor-pointer',
-                  item.level === 3 ? 'pl-5 text-slate-400' : 'text-slate-300 font-medium',
+                  item.level === 3 ? 'pl-5 text-slate-500' : 'text-slate-700 font-medium',
                   activeId === item.id
-                    ? 'bg-indigo-500/15 text-indigo-400 font-semibold border-l-2 border-indigo-500 pl-3'
-                    : 'hover:text-slate-100 hover:bg-slate-800/40'
+                    ? 'bg-indigo-50 text-indigo-700 font-bold border-l-2 border-indigo-600 pl-3'
+                    : 'hover:text-slate-900 hover:bg-slate-50'
                 )}
               >
                 {item.text}

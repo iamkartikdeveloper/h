@@ -63,12 +63,12 @@ export default function AdminSubscribersPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Newsletter Subscribers
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
             Registered developers subscribed to tutorials, updates, and open source releases.
           </p>
         </div>
@@ -85,9 +85,9 @@ export default function AdminSubscribersPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/40 overflow-hidden">
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left text-xs">
-          <thead className="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+          <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[10px]">
             <tr>
               <th className="p-4">Email Address</th>
               <th className="p-4">Status</th>
@@ -95,38 +95,38 @@ export default function AdminSubscribersPage() {
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/80">
+          <tbody className="divide-y divide-slate-100">
             {loading ? (
               <tr>
-                <td colSpan={4} className="p-8 text-center text-slate-400">
+                <td colSpan={4} className="p-8 text-center text-slate-500">
                   Loading subscribers...
                 </td>
               </tr>
             ) : subscribers.length === 0 ? (
               <tr>
-                <td colSpan={4} className="p-8 text-center text-slate-400">
+                <td colSpan={4} className="p-8 text-center text-slate-500">
                   No subscribers yet.
                 </td>
               </tr>
             ) : (
               subscribers.map((sub) => (
-                <tr key={sub.id} className="hover:bg-slate-800/30 transition-colors">
-                  <td className="p-4 font-mono font-medium text-white flex items-center gap-2">
-                    <Mail className="w-3.5 h-3.5 text-slate-500" />
+                <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-mono font-medium text-slate-900 flex items-center gap-2">
+                    <Mail className="w-3.5 h-3.5 text-slate-400" />
                     <span>{sub.email}</span>
                   </td>
                   <td className="p-4">
-                    <span className="text-emerald-400 font-medium capitalize bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 text-[10px]">
+                    <span className="text-emerald-700 font-medium capitalize bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[10px]">
                       {sub.status}
                     </span>
                   </td>
-                  <td className="p-4 text-slate-400 font-mono text-[11px]">
+                  <td className="p-4 text-slate-500 font-mono text-[11px]">
                     {formatDate(sub.created_at)}
                   </td>
                   <td className="p-4 text-right">
                     <button
                       onClick={() => handleDelete(sub.id, sub.email)}
-                      className="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                      className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
                       title="Remove subscriber"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

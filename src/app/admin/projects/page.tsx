@@ -132,12 +132,12 @@ export default function AdminProjectsPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Portfolio Projects
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
             Manage case studies, GitHub repositories, and live demo showcases.
           </p>
         </div>
@@ -158,18 +158,18 @@ export default function AdminProjectsPage() {
       {/* Grid of Projects */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
-          <div className="col-span-full py-12 text-center text-slate-400 text-xs">
+          <div className="col-span-full py-12 text-center text-slate-500 text-xs">
             Loading projects...
           </div>
         ) : projects.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-slate-400 text-xs">
+          <div className="col-span-full py-12 text-center text-slate-500 text-xs">
             No projects added yet. Click "Add Project" to add your first work!
           </div>
         ) : (
           projects.map((proj) => (
             <div
               key={proj.id}
-              className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 flex flex-col justify-between"
+              className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between"
             >
               <div className="space-y-3">
                 <img
@@ -178,18 +178,18 @@ export default function AdminProjectsPage() {
                     'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600'
                   }
                   alt={proj.title}
-                  className="w-full aspect-video rounded-xl object-cover bg-slate-950"
+                  className="w-full aspect-video rounded-xl object-cover bg-slate-100"
                 />
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-white text-base line-clamp-1">{proj.title}</h3>
+                  <h3 className="font-bold text-slate-900 text-base line-clamp-1">{proj.title}</h3>
                   {proj.is_featured && <Badge variant="gradient" size="sm">Featured</Badge>}
                 </div>
-                <p className="text-xs text-slate-400 line-clamp-2">{proj.description}</p>
+                <p className="text-xs text-slate-600 line-clamp-2">{proj.description}</p>
                 <div className="flex flex-wrap gap-1">
                   {proj.technologies?.map((tech, i) => (
                     <span
                       key={i}
-                      className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/50"
+                      className="text-[10px] px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200"
                     >
                       {tech}
                     </span>
@@ -197,14 +197,14 @@ export default function AdminProjectsPage() {
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {proj.demo_url && (
                     <a
                       href={proj.demo_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                      className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors"
                       title="Live Demo"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -215,7 +215,7 @@ export default function AdminProjectsPage() {
                       href={proj.github_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                      className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors"
                       title="GitHub"
                     >
                       <GitHubIcon className="w-3.5 h-3.5" />
@@ -225,7 +225,7 @@ export default function AdminProjectsPage() {
 
                 <button
                   onClick={() => handleDelete(proj.id, proj.title)}
-                  className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/10 transition-colors"
+                  className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors"
                   title="Delete project"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -238,21 +238,21 @@ export default function AdminProjectsPage() {
 
       {/* Add Project Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-              <h2 className="text-lg font-bold text-white">Create New Project</h2>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto shadow-xl">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+              <h2 className="text-lg font-bold text-slate-900">Create New Project</h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 rounded-lg text-slate-400 hover:text-white"
+                className="p-2 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {errorMsg && (
-              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -328,14 +328,14 @@ export default function AdminProjectsPage() {
                   id="featuredProject"
                   checked={isFeatured}
                   onChange={(e) => setIsFeatured(e.target.checked)}
-                  className="w-4 h-4 rounded bg-slate-800 border-slate-700 text-indigo-600"
+                  className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <label htmlFor="featuredProject" className="text-xs text-slate-300 font-medium">
+                <label htmlFor="featuredProject" className="text-xs text-slate-700 font-medium">
                   Feature prominently on homepage
                 </label>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                 <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
                   Cancel
                 </Button>

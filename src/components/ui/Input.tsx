@@ -30,12 +30,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-300"
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-700"
           >
             {label}
           </label>
         )}
-        <div className="relative rounded-xl shadow-sm">
+        <div className="relative rounded-xl shadow-2xs">
           {leftIcon && (
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
               {leftIcon}
@@ -45,11 +45,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={cn(
-              'block w-full rounded-xl bg-slate-900/80 border text-slate-100 placeholder-slate-500 text-sm py-2.5 transition-all duration-200 outline-none',
-              'border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20',
+              'block w-full rounded-xl bg-white border text-slate-900 placeholder:text-slate-400 text-sm py-2.5 transition-all duration-200 outline-none',
+              'border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/15',
               leftIcon ? 'pl-10' : 'pl-3.5',
               rightIcon ? 'pr-10' : 'pr-3.5',
-              error && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20',
+              error && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/15',
               className
             )}
             {...props}
@@ -60,9 +60,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
         </div>
-        {error && <p className="text-xs text-rose-400 font-medium">{error}</p>}
+        {error && <p className="text-xs text-rose-600 font-medium">{error}</p>}
         {helperText && !error && (
-          <p className="text-xs text-slate-400">{helperText}</p>
+          <p className="text-xs text-slate-500">{helperText}</p>
         )}
       </div>
     );

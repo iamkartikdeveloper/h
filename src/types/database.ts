@@ -6,12 +6,16 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+export type UserRole = 'user' | 'admin' | 'owner';
+
 export interface Profile {
   id: string;
+  email?: string | null;
   display_name: string;
   username: string;
   bio: string | null;
   avatar_url: string | null;
+  role: UserRole;
   skills: string[];
   social_links: {
     youtube?: string;
@@ -21,6 +25,7 @@ export interface Profile {
     email?: string;
     website?: string;
   };
+  created_at?: string;
   updated_at: string;
 }
 

@@ -16,6 +16,8 @@ import {
 import { GitHubIcon } from '@/components/ui/Icons';
 import { formatDate } from '@/lib/utils/reading-time';
 
+import { MOCK_PROJECTS } from '@/lib/mock-data';
+
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
 }
@@ -24,21 +26,29 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   const { slug } = await params;
   const supabase = createServerClient();
 
-  const { data: project } = await supabase
-    .from('projects')
-    .select('title, description, thumbnail_url')
-    .eq('slug', slug)
-    .single();
+  let projectData: any = null;
+  try {
+    const { data } = await supabase
+      .from('projects')
+      .select('title, description, thumbnail_url')
+      .eq('slug', slug)
+      .single();
+    projectData = data;
+  } catch {}
 
-  if (!project) return { title: 'Project Not Found' };
+  if (!projectData) {
+    projectData = MOCK_PROJECTS.find((p) => p.slug === slug);
+  }
+
+  if (!projectData) return { title: 'Project Not Found' };
 
   return {
-    title: `${project.title} | Projects | Kartik Sharma`,
-    description: project.description || '',
+    title: `${projectData.title} | Projects | Kartik Sharma`,
+    description: projectData.description || '',
     openGraph: {
-      title: project.title,
-      description: project.description || '',
-      images: [project.thumbnail_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200'],
+      title: projectData.title,
+      description: projectData.description || '',
+      images: [projectData.thumbnail_url || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200'],
     },
   };
 }
@@ -47,27 +57,35 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const supabase = createServerClient();
 
-  const { data: project } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('slug', slug)
-    .single();
+  let project: any = null;
+  try {
+    const { data } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+    project = data;
+  } catch {}
+
+  if (!project) {
+    project = MOCK_PROJECTS.find((p) => p.slug === slug);
+  }
 
   if (!project) notFound();
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-10">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-slate-400">
-        <Link href="/" className="hover:text-indigo-400 transition-colors">
+      <nav className="flex items-center gap-2 text-xs text-slate-500">
+        <Link href="/" className="hover:text-indigo-600 transition-colors">
           Home
         </Link>
         <ChevronRight className="w-3.5 h-3.5" />
-        <Link href="/projects" className="hover:text-indigo-400 transition-colors">
+        <Link href="/projects" className="hover:text-indigo-600 transition-colors">
           Projects
         </Link>
         <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-slate-200 font-medium truncate max-w-xs">{project.title}</span>
+        <span className="text-slate-900 font-semibold truncate max-w-xs">{project.title}</span>
       </nav>
 
       {/* Header */}
@@ -78,17 +96,17 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               Featured Case Study
             </Badge>
           )}
-          <span className="text-xs text-slate-400 flex items-center gap-1.5">
+          <span className="text-xs text-slate-500 flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5" />
             <span>Updated {formatDate(project.updated_at)}</span>
           </span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
           {project.title}
         </h1>
 
-        <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-3xl">
+        <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
           {project.description}
         </p>
 
@@ -102,13 +120,13 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-4 pt-4 border-b border-slate-800/80 pb-8">
+        <div className="flex flex-wrap items-center gap-4 pt-4 border-b border-slate-200 pb-8">
           {project.demo_url && (
             <a
               href={project.demo_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-600/30 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition-colors"
             >
               <span>Visit Live Demo</span>
               <ExternalLink className="w-4 h-4" />
@@ -119,7 +137,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               href={project.github_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-white text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-sm font-semibold transition-colors"
             >
               <GitHubIcon className="w-4 h-4" />
               <span>Browse Source Code</span>
@@ -130,7 +148,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
       {/* Hero Showcase Image */}
       {project.thumbnail_url && (
-        <div className="rounded-2xl overflow-hidden border border-slate-800 shadow-2xl bg-slate-900">
+        <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-md bg-slate-100">
           <img
             src={project.thumbnail_url}
             alt={project.title}
@@ -141,8 +159,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
       {/* Case Study Detailed Content */}
       {project.content && (
-        <div className="p-8 rounded-2xl bg-slate-900/40 border border-slate-800">
-          <h2 className="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-3">
+        <div className="p-8 rounded-2xl bg-white border border-slate-200 shadow-2xs">
+          <h2 className="text-xl font-extrabold text-slate-900 mb-6 border-b border-slate-200 pb-3">
             Architecture &amp; Implementation Details
           </h2>
           <MarkdownRenderer content={project.content} />

@@ -74,14 +74,14 @@ export default function ContactPage() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-12">
       {/* Header */}
       <div className="space-y-4 max-w-2xl">
-        <div className="inline-flex items-center gap-2 text-indigo-400 text-xs font-mono uppercase tracking-wider font-semibold">
+        <div className="inline-flex items-center gap-2 text-indigo-600 text-xs font-mono uppercase tracking-wider font-bold">
           <Mail className="w-4 h-4" />
           <span>Connect With Me</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
           Let's Build Something Great Together
         </h1>
-        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+        <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
           Have an Android app project, need AdMob monetization advice, or want to sponsor a YouTube tutorial? Fill out the form or reach out through my socials.
         </p>
       </div>
@@ -91,7 +91,7 @@ export default function ContactPage() {
         <div className="lg:col-span-7">
           <form
             onSubmit={handleSubmit}
-            className="p-8 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-5 backdrop-blur-xl shadow-2xl"
+            className="p-8 rounded-3xl bg-white border border-slate-200 space-y-5 shadow-xs"
           >
             {/* Honeypot field */}
             <input
@@ -139,15 +139,15 @@ export default function ContactPage() {
             />
 
             {error && (
-              <div className="flex items-center gap-2 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-medium">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+              <div className="flex items-center gap-2 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                 <span>{error}</span>
               </div>
             )}
 
             {success && (
-              <div className="flex items-center gap-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
-                <CheckCircle2 className="w-5 h-5 shrink-0" />
+              <div className="flex items-center gap-2 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
                 <span>
                   Thank you! Your message has been sent successfully. I will get back to you within 24-48 hours.
                 </span>
@@ -169,70 +169,70 @@ export default function ContactPage() {
 
         {/* Info & Response Card */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="p-6 rounded-3xl bg-slate-900/40 border border-slate-800 space-y-6">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Clock className="w-4 h-4 text-indigo-400" />
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-6">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-indigo-600" />
               <span>Response Guarantee</span>
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               I read every message and typically respond within 24 business hours. For immediate project inquiries or mentorship, include your project repo or brief.
             </p>
 
-            <div className="pt-4 border-t border-slate-800 space-y-4 text-xs">
+            <div className="pt-4 border-t border-slate-100 space-y-4 text-xs">
               <div>
                 <span className="text-slate-500 block mb-1">Direct Inquiries:</span>
                 <a
                   href="mailto:contact@kartikdev.com"
-                  className="text-white hover:text-indigo-400 font-medium transition-colors"
+                  className="text-slate-900 hover:text-indigo-600 font-semibold transition-colors"
                 >
                   contact@kartikdev.com
                 </a>
               </div>
               <div>
                 <span className="text-slate-500 block mb-1">Location &amp; Timezone:</span>
-                <span className="text-white font-medium">India (IST / UTC +5:30)</span>
+                <span className="text-slate-900 font-semibold">India (IST / UTC +5:30)</span>
               </div>
             </div>
           </div>
 
           {/* Social Presence */}
-          <div className="p-6 rounded-3xl bg-slate-900/40 border border-slate-800 space-y-4">
-            <h3 className="text-sm font-bold text-white">Connect Across Platforms</h3>
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
+            <h3 className="text-sm font-bold text-slate-900">Connect Across Platforms</h3>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <a
                 href="https://youtube.com/@kartikdev"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-200 transition-colors"
+                className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold transition-colors"
               >
-                <YouTubeIcon className="w-4 h-4 text-red-500" />
+                <YouTubeIcon className="w-4 h-4 text-red-600" />
                 <span>YouTube</span>
               </a>
               <a
                 href="https://github.com/kartikdev"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-200 transition-colors"
+                className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold transition-colors"
               >
-                <GitHubIcon className="w-4 h-4 text-slate-200" />
+                <GitHubIcon className="w-4 h-4 text-slate-700" />
                 <span>GitHub</span>
               </a>
               <a
                 href="https://linkedin.com/in/kartikdev"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-200 transition-colors"
+                className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold transition-colors"
               >
-                <LinkedInIcon className="w-4 h-4 text-sky-400" />
+                <LinkedInIcon className="w-4 h-4 text-sky-600" />
                 <span>LinkedIn</span>
               </a>
               <a
                 href="https://twitter.com/kartikdev"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 p-3 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-200 transition-colors"
+                className="flex items-center gap-2 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold transition-colors"
               >
-                <TwitterIcon className="w-4 h-4 text-sky-400" />
+                <TwitterIcon className="w-4 h-4 text-sky-600" />
                 <span>Twitter</span>
               </a>
             </div>

@@ -14,13 +14,13 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const variants = {
-    primary: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30',
-    secondary: 'bg-slate-800 text-slate-300 border border-slate-700/60',
-    success: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30',
-    warning: 'bg-amber-500/10 text-amber-400 border border-amber-500/30',
-    danger: 'bg-rose-500/10 text-rose-400 border border-rose-500/30',
-    outline: 'bg-transparent text-slate-300 border border-slate-700',
-    gradient: 'bg-gradient-to-r from-indigo-500/20 to-sky-500/20 text-sky-300 border border-sky-500/30 font-medium',
+    primary: 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+    secondary: 'bg-slate-100 text-slate-700 border border-slate-200',
+    success: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    warning: 'bg-amber-50 text-amber-800 border border-amber-200',
+    danger: 'bg-rose-50 text-rose-700 border border-rose-200',
+    outline: 'bg-white text-slate-700 border border-slate-300',
+    gradient: 'bg-gradient-to-r from-indigo-50 to-sky-50 text-indigo-700 border border-indigo-200 font-medium',
   };
 
   const sizes = {

@@ -62,8 +62,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className="min-h-screen bg-[#090d16] text-slate-100 antialiased selection:bg-indigo-500/30 selection:text-indigo-200 flex flex-col justify-between">
+    <html lang="en" className="scroll-smooth bg-slate-50">
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-indigo-100 selection:text-indigo-900 flex flex-col justify-between">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

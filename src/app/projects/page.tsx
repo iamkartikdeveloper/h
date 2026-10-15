@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 import { Project } from '@/types/database';
+import { MOCK_PROJECTS } from '@/lib/mock-data';
 import { Badge } from '@/components/ui/Badge';
 import {
   FolderGit2,
@@ -17,7 +18,7 @@ import {
 import { GitHubIcon } from '@/components/ui/Icons';
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>(MOCK_PROJECTS);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTech, setSelectedTech] = useState('all');
@@ -36,10 +37,13 @@ export default function ProjectsPage() {
         .order('is_featured', { ascending: false })
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setProjects(data || []);
-    } catch (err) {
-      console.error('Error loading projects:', err);
+      if (error || !data || data.length === 0) {
+        setProjects(MOCK_PROJECTS);
+      } else {
+        setProjects(data);
+      }
+    } catch {
+      setProjects(MOCK_PROJECTS);
     } finally {
       setLoading(false);
     }
@@ -66,20 +70,20 @@ export default function ProjectsPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-12">
       {/* Header */}
       <div className="space-y-4 max-w-3xl">
-        <div className="inline-flex items-center gap-2 text-indigo-400 text-xs font-mono uppercase tracking-wider font-semibold">
+        <div className="inline-flex items-center gap-2 text-indigo-600 text-xs font-mono uppercase tracking-wider font-bold">
           <FolderGit2 className="w-4 h-4" />
           <span>Engineering Showcase</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight">
           Featured Projects &amp; Open Source
         </h1>
-        <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+        <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
           Explore mobile applications, open-source libraries, and cloud architecture solutions developed with modern best practices, clean architecture, and testable code.
         </p>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4 backdrop-blur-md">
+      <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
             <Search className="w-5 h-5" />
@@ -89,7 +93,7 @@ export default function ProjectsPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search projects by name or keywords..."
-            className="w-full bg-slate-950/80 border border-slate-800 rounded-xl pl-12 pr-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-all"
+            className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-12 pr-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-indigo-600 shadow-2xs transition-all"
           />
         </div>
 
@@ -97,10 +101,10 @@ export default function ProjectsPage() {
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
           <button
             onClick={() => setSelectedTech('all')}
-            className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition-colors cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-colors cursor-pointer ${
               selectedTech === 'all'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-slate-800/80 text-slate-400 hover:text-white'
+                ? 'bg-indigo-600 text-white shadow-2xs'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
             All Tech Stack
@@ -109,10 +113,10 @@ export default function ProjectsPage() {
             <button
               key={tech}
               onClick={() => setSelectedTech(tech)}
-              className={`px-3 py-1.5 rounded-xl font-medium whitespace-nowrap transition-colors cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 selectedTech === tech
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-slate-800/80 text-slate-400 hover:text-white'
+                  ? 'bg-indigo-600 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
               {tech}
@@ -127,19 +131,19 @@ export default function ProjectsPage() {
           {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className="rounded-2xl bg-slate-900/40 border border-slate-800 overflow-hidden animate-pulse space-y-4 p-4"
+              className="rounded-2xl bg-white border border-slate-200 shadow-2xs overflow-hidden animate-pulse space-y-4 p-4"
             >
-              <div className="w-full aspect-video bg-slate-800 rounded-xl" />
-              <div className="h-4 bg-slate-800 rounded w-3/4" />
-              <div className="h-3 bg-slate-800/60 rounded w-full" />
+              <div className="w-full aspect-video bg-slate-100 rounded-xl" />
+              <div className="h-4 bg-slate-100 rounded w-3/4" />
+              <div className="h-3 bg-slate-100 rounded w-full" />
             </div>
           ))}
         </div>
       ) : filteredProjects.length === 0 ? (
-        <div className="py-20 text-center rounded-2xl bg-slate-900/30 border border-slate-800/60 p-8 space-y-3">
-          <FolderGit2 className="w-12 h-12 text-slate-500 mx-auto" />
-          <h3 className="text-lg font-bold text-white">No projects found</h3>
-          <p className="text-xs text-slate-400">
+        <div className="py-20 text-center rounded-2xl bg-white border border-slate-200 shadow-xs p-8 space-y-3">
+          <FolderGit2 className="w-12 h-12 text-slate-400 mx-auto" />
+          <h3 className="text-lg font-bold text-slate-900">No projects found</h3>
+          <p className="text-xs text-slate-500">
             No projects matched your criteria. Try selecting another technology or clearing your search.
           </p>
         </div>
@@ -148,9 +152,9 @@ export default function ProjectsPage() {
           {filteredProjects.map((project) => (
             <div
               key={project.id}
-              className="glass-card rounded-2xl overflow-hidden flex flex-col group border border-slate-800"
+              className="light-card rounded-2xl overflow-hidden flex flex-col group border border-slate-200 bg-white"
             >
-              <div className="relative aspect-video w-full overflow-hidden bg-slate-900">
+              <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
                 <img
                   src={
                     project.thumbnail_url ||
@@ -159,7 +163,6 @@ export default function ProjectsPage() {
                   alt={project.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
                 {project.is_featured && (
                   <div className="absolute top-3 left-3">
                     <Badge variant="gradient" size="sm">
@@ -171,17 +174,17 @@ export default function ProjectsPage() {
 
               <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition-colors">
+                  <h3 className="text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
                     <Link href={`/projects/${project.slug}`}>{project.title}</Link>
                   </h3>
-                  <p className="text-xs text-slate-400 line-clamp-3 leading-relaxed">
+                  <p className="text-xs text-slate-600 line-clamp-3 leading-relaxed">
                     {project.description}
                   </p>
                   <div className="flex flex-wrap gap-1.5 pt-2">
                     {project.technologies?.map((tech, i) => (
                       <span
                         key={i}
-                        className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700/50"
+                        className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 font-medium"
                       >
                         {tech}
                       </span>
@@ -189,14 +192,14 @@ export default function ProjectsPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3 text-xs">
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2">
                     {project.github_url && (
                       <a
                         href={project.github_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                        className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 transition-colors"
                         title="GitHub Repository"
                       >
                         <GitHubIcon className="w-4 h-4" />
@@ -207,7 +210,7 @@ export default function ProjectsPage() {
                         href={project.demo_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-md shadow-indigo-600/30 transition-colors"
+                        className="flex items-center gap-1 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-xs transition-colors"
                       >
                         <span>Live Demo</span>
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -216,7 +219,7 @@ export default function ProjectsPage() {
                   </div>
                   <Link
                     href={`/projects/${project.slug}`}
-                    className="text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+                    className="text-indigo-600 hover:text-indigo-700 font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform"
                   >
                     Details <ArrowRight className="w-3.5 h-3.5" />
                   </Link>

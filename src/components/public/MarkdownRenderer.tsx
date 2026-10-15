@@ -46,7 +46,7 @@ export function MarkdownRenderer({ content, className = '' }: MarkdownRendererPr
   }
 
   return (
-    <div className={`prose prose-invert max-w-none text-slate-300 leading-relaxed space-y-4 ${className}`}>
+    <div className={`prose max-w-none text-slate-700 leading-relaxed space-y-4 ${className}`}>
       {parts}
     </div>
   );
@@ -69,7 +69,7 @@ function renderTextMarkdown(text: string, keyPrefix: string) {
             <h1
               key={`${keyPrefix}-h1-${idx}`}
               id={id}
-              className="text-2xl md:text-3xl font-extrabold text-white mt-8 mb-4 tracking-tight border-b border-slate-800 pb-3"
+              className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-8 mb-4 tracking-tight border-b border-slate-200 pb-3"
             >
               {title}
             </h1>
@@ -84,10 +84,10 @@ function renderTextMarkdown(text: string, keyPrefix: string) {
             <h2
               key={`${keyPrefix}-h2-${idx}`}
               id={id}
-              className="text-xl md:text-2xl font-bold text-white mt-8 mb-3 tracking-tight flex items-center gap-2 group scroll-mt-24"
+              className="text-xl md:text-2xl font-bold text-slate-900 mt-8 mb-3 tracking-tight flex items-center gap-2 group scroll-mt-24"
             >
               <span>{title}</span>
-              <a href={`#${id}`} className="text-slate-600 opacity-0 group-hover:opacity-100 hover:text-indigo-400 text-lg transition-opacity">
+              <a href={`#${id}`} className="text-slate-400 opacity-0 group-hover:opacity-100 hover:text-indigo-600 text-lg transition-opacity">
                 #
               </a>
             </h2>
@@ -102,7 +102,7 @@ function renderTextMarkdown(text: string, keyPrefix: string) {
             <h3
               key={`${keyPrefix}-h3-${idx}`}
               id={id}
-              className="text-lg md:text-xl font-semibold text-slate-100 mt-6 mb-2 tracking-tight scroll-mt-24"
+              className="text-lg md:text-xl font-semibold text-slate-800 mt-6 mb-2 tracking-tight scroll-mt-24"
             >
               {title}
             </h3>
@@ -115,9 +115,9 @@ function renderTextMarkdown(text: string, keyPrefix: string) {
           return (
             <div
               key={`${keyPrefix}-quote-${idx}`}
-              className="my-4 p-4 rounded-xl border border-indigo-500/30 bg-indigo-950/20 text-slate-300 flex items-start gap-3"
+              className="my-4 p-4 rounded-xl border border-indigo-200 bg-indigo-50/70 text-slate-800 flex items-start gap-3"
             >
-              <Info className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
               <div className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: formatInline(quote) }} />
             </div>
           );
@@ -127,7 +127,7 @@ function renderTextMarkdown(text: string, keyPrefix: string) {
         if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
           const items = trimmed.split('\n').filter((l) => l.trim().startsWith('- ') || l.trim().startsWith('* '));
           return (
-            <ul key={`${keyPrefix}-ul-${idx}`} className="list-disc list-inside space-y-1.5 my-3 text-slate-300 text-sm pl-2">
+            <ul key={`${keyPrefix}-ul-${idx}`} className="list-disc list-inside space-y-1.5 my-3 text-slate-700 text-sm pl-2">
               {items.map((item, itemIdx) => (
                 <li
                   key={itemIdx}
@@ -144,7 +144,7 @@ function renderTextMarkdown(text: string, keyPrefix: string) {
         if (/^\d+\.\s+/.test(trimmed)) {
           const items = trimmed.split('\n').filter((l) => /^\d+\.\s+/.test(l.trim()));
           return (
-            <ol key={`${keyPrefix}-ol-${idx}`} className="list-decimal list-inside space-y-1.5 my-3 text-slate-300 text-sm pl-2">
+            <ol key={`${keyPrefix}-ol-${idx}`} className="list-decimal list-inside space-y-1.5 my-3 text-slate-700 text-sm pl-2">
               {items.map((item, itemIdx) => (
                 <li
                   key={itemIdx}
@@ -161,7 +161,7 @@ function renderTextMarkdown(text: string, keyPrefix: string) {
         return (
           <p
             key={`${keyPrefix}-p-${idx}`}
-            className="text-slate-300 text-sm md:text-base leading-relaxed my-2"
+            className="text-slate-700 text-sm md:text-base leading-relaxed my-2"
             dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }}
           />
         );
@@ -175,11 +175,11 @@ function formatInline(str: string): string {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em class="italic text-slate-200">$1</em>')
-    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-800 text-indigo-300 text-xs font-mono border border-slate-700/60">$1</code>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em class="italic text-slate-800">$1</em>')
+    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 text-indigo-700 text-xs font-mono border border-slate-200">$1</code>')
     .replace(
       /\[(.*?)\]\((.*?)\)/g,
-      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 underline underline-offset-2">$1</a>'
+      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-700 font-medium underline underline-offset-2">$1</a>'
     );
 }

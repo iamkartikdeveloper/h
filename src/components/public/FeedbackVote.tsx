@@ -35,36 +35,36 @@ export function FeedbackVote({ tutorialId }: FeedbackVoteProps) {
 
   if (voted) {
     return (
-      <div className="flex items-center gap-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm">
-        <CheckCircle2 className="w-5 h-5 shrink-0" />
+      <div className="flex items-center gap-2 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium">
+        <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-600" />
         <span>Thank you for your feedback! It helps keep these tutorials top-notch.</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-md">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200 shadow-2xs">
       <div>
-        <h4 className="text-sm font-semibold text-white">Was this tutorial helpful?</h4>
-        <p className="text-xs text-slate-400">Let me know if you found this guide clear and useful.</p>
+        <h4 className="text-sm font-bold text-slate-900">Was this tutorial helpful?</h4>
+        <p className="text-xs text-slate-500">Let me know if you found this guide clear and useful.</p>
       </div>
 
       <div className="flex items-center gap-3">
         <button
           onClick={() => handleVote(true)}
           disabled={isSubmitting}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 border border-slate-700 text-slate-200 text-xs font-medium transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 border border-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
         >
-          <ThumbsUp className="w-4 h-4" />
+          <ThumbsUp className="w-4 h-4 text-emerald-600" />
           <span>Yes, it helped!</span>
         </button>
 
         <button
           onClick={() => handleVote(false)}
           disabled={isSubmitting}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-500/20 hover:text-rose-400 hover:border-rose-500/40 border border-slate-700 text-slate-200 text-xs font-medium transition-all cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-50 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300 border border-slate-200 text-slate-700 text-xs font-semibold transition-all cursor-pointer shadow-2xs"
         >
-          <ThumbsDown className="w-4 h-4" />
+          <ThumbsDown className="w-4 h-4 text-rose-500" />
           <span>Needs improvement</span>
         </button>
       </div>

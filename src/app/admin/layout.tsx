@@ -64,23 +64,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return;
       }
 
-      // Verify admin role in admin_users
-      const { data: adminRecord, error } = await supabase
-        .from('admin_users')
-        .select('id, role')
-        .eq('user_id', session.user.id)
+      // Verify admin/owner role in public.profiles table
+      const { data: profileRecord } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
         .single();
 
-      if (error || !adminRecord) {
-        console.warn('User authenticated but not registered in admin_users');
-        router.push('/admin/login');
+      if (profileRecord?.role === 'admin' || profileRecord?.role === 'owner') {
+        setIsAdmin(true);
+      } else if (profileRecord?.role === 'user') {
+        // Normal 'user' role redirected to home page
+        router.push('/');
         return;
-      }
+      } else {
+        // Fallback check on admin_users table
+        const { data: legacyAdmin } = await supabase
+          .from('admin_users')
+          .select('role')
+          .eq('user_id', session.user.id)
+          .single();
 
-      setIsAdmin(true);
+        if (legacyAdmin) {
+          setIsAdmin(true);
+        } else {
+          router.push('/');
+          return;
+        }
+      }
     } catch (err) {
       console.error('Admin check error:', err);
-      router.push('/admin/login');
+      router.push('/');
     } finally {
       setLoading(false);
     }
@@ -97,8 +111,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#090d16] flex flex-col items-center justify-center space-y-4 text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center space-y-4 text-slate-600">
+        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
         <p className="text-xs font-mono">Verifying administrative security credentials...</p>
       </div>
     );
@@ -117,16 +131,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col md:flex-row">
       {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-slate-950 border-b border-slate-800">
+      <div className="md:hidden flex items-center justify-between p-4 bg-white border-b border-slate-200">
         <div className="flex items-center gap-2">
-          <Shield className="w-5 h-5 text-indigo-400" />
-          <span className="font-bold text-white text-sm">Admin Control Panel</span>
+          <Shield className="w-5 h-5 text-indigo-600" />
+          <span className="font-bold text-slate-900 text-sm">Admin Control Panel</span>
         </div>
         <button
           onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-          className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300"
+          className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-700"
         >
           {mobileSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -135,21 +149,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Admin Sidebar */}
       <aside
         className={cn(
-          'w-64 bg-slate-950 border-r border-slate-800/80 p-5 flex flex-col justify-between shrink-0',
+          'w-64 bg-white border-r border-slate-200 p-5 flex flex-col justify-between shrink-0 shadow-2xs',
           'fixed inset-y-0 left-0 z-50 md:static md:translate-x-0 transition-transform duration-200',
           mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         )}
       >
         <div className="space-y-6">
           {/* Brand Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <Link href="/admin" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-600/30">
+              <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-2xs">
                 <Shield className="w-4 h-4" />
               </div>
               <div>
-                <span className="font-bold text-white text-sm block">Admin Portal</span>
-                <span className="text-[10px] text-indigo-400 font-mono">SUPABASE VERIFIED</span>
+                <span className="font-bold text-slate-900 text-sm block">Admin Portal</span>
+                <span className="text-[10px] text-indigo-600 font-mono font-semibold">SUPABASE VERIFIED</span>
               </div>
             </Link>
           </div>
@@ -169,10 +183,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   href={item.href}
                   onClick={() => setMobileSidebarOpen(false)}
                   className={cn(
-                    'flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all',
+                    'flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all',
                     isActive
-                      ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                      : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900'
+                      ? 'bg-indigo-600 text-white shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   )}
                 >
                   <Icon className="w-4 h-4 shrink-0" />
@@ -184,24 +198,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Sidebar Footer Controls */}
-        <div className="pt-4 border-t border-slate-800 space-y-2">
+        <div className="pt-4 border-t border-slate-100 space-y-2">
           <Link
             href="/"
             target="_blank"
-            className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-white hover:bg-slate-900 transition-colors"
+            className="flex items-center justify-between px-3 py-2 rounded-xl text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors font-medium"
           >
             <span className="flex items-center gap-2">
               <ExternalLink className="w-3.5 h-3.5" />
               <span>Public Website</span>
             </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800">
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
               Live
             </span>
           </Link>
 
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer font-semibold"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
@@ -210,7 +224,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-6 md:p-10 max-w-7xl overflow-y-auto">
+      <main className="flex-1 p-6 md:p-10 max-w-7xl overflow-y-auto bg-slate-50">
         {children}
       </main>
     </div>

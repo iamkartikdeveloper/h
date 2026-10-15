@@ -16,7 +16,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="block text-xs font-semibold uppercase tracking-wider text-slate-300"
+            className="block text-xs font-semibold uppercase tracking-wider text-slate-700"
           >
             {label}
           </label>
@@ -26,16 +26,16 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           id={textareaId}
           rows={rows}
           className={cn(
-            'block w-full rounded-xl bg-slate-900/80 border text-slate-100 placeholder-slate-500 text-sm p-3.5 transition-all duration-200 outline-none',
-            'border-slate-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20',
-            error && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20',
+            'block w-full rounded-xl bg-white border text-slate-900 placeholder:text-slate-400 text-sm p-3.5 transition-all duration-200 outline-none shadow-2xs',
+            'border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-600/15',
+            error && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/15',
             className
           )}
           {...props}
         />
-        {error && <p className="text-xs text-rose-400 font-medium">{error}</p>}
+        {error && <p className="text-xs text-rose-600 font-medium">{error}</p>}
         {helperText && !error && (
-          <p className="text-xs text-slate-400">{helperText}</p>
+          <p className="text-xs text-slate-500">{helperText}</p>
         )}
       </div>
     );

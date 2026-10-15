@@ -87,20 +87,20 @@ export function CommentSection({ tutorialId }: CommentSectionProps) {
   };
 
   return (
-    <div className="space-y-8 mt-12 pt-8 border-t border-slate-800">
+    <div className="space-y-8 mt-12 pt-8 border-t border-slate-200">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <MessageSquare className="w-5 h-5 text-indigo-400" />
-          <h3 className="text-xl font-bold text-white">
+          <MessageSquare className="w-5 h-5 text-indigo-600" />
+          <h3 className="text-xl font-extrabold text-slate-900">
             Community Comments ({comments.length})
           </h3>
         </div>
       </div>
 
       {/* New Comment Form */}
-      <form onSubmit={handleSubmit} className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-4">
-        <h4 className="text-sm font-semibold text-slate-200">Leave a question or comment</h4>
-        <p className="text-xs text-slate-400">
+      <form onSubmit={handleSubmit} className="p-6 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
+        <h4 className="text-sm font-bold text-slate-900">Leave a question or comment</h4>
+        <p className="text-xs text-slate-500">
           Have an implementation question or found a trick? Share below! Comments are moderated to prevent spam.
         </p>
 
@@ -142,15 +142,15 @@ export function CommentSection({ tutorialId }: CommentSectionProps) {
         />
 
         {errorMsg && (
-          <div className="flex items-center gap-2 text-rose-400 text-xs bg-rose-500/10 p-3 rounded-lg border border-rose-500/20">
-            <AlertCircle className="w-4 h-4 shrink-0" />
+          <div className="flex items-center gap-2 text-rose-800 text-xs bg-rose-50 p-3 rounded-xl border border-rose-200">
+            <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
             <span>{errorMsg}</span>
           </div>
         )}
 
         {successMsg && (
-          <div className="flex items-center gap-2 text-emerald-400 text-xs bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20">
-            <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <div className="flex items-center gap-2 text-emerald-800 text-xs bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
             <span>Thank you! Your comment has been submitted and will appear once approved by the administrator.</span>
           </div>
         )}
@@ -167,35 +167,35 @@ export function CommentSection({ tutorialId }: CommentSectionProps) {
         {loading ? (
           <div className="space-y-3">
             {[1, 2].map((i) => (
-              <div key={i} className="p-4 rounded-xl bg-slate-900/40 border border-slate-800 animate-pulse space-y-2">
-                <div className="h-4 bg-slate-800 rounded w-1/4" />
-                <div className="h-3 bg-slate-800/60 rounded w-3/4" />
+              <div key={i} className="p-4 rounded-xl bg-white border border-slate-200 animate-pulse space-y-2">
+                <div className="h-4 bg-slate-100 rounded w-1/4" />
+                <div className="h-3 bg-slate-100 rounded w-3/4" />
               </div>
             ))}
           </div>
         ) : comments.length === 0 ? (
-          <div className="text-center py-8 px-4 rounded-xl bg-slate-900/30 border border-slate-800/60 text-slate-400 text-sm">
+          <div className="text-center py-8 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-500 text-sm">
             <p>No comments yet. Be the first to share your thoughts!</p>
           </div>
         ) : (
           comments.map((comment) => (
             <div
               key={comment.id}
-              className="p-5 rounded-xl bg-slate-900/40 border border-slate-800/80 space-y-2 transition-colors hover:border-slate-700"
+              className="p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2 transition-colors hover:border-slate-300"
             >
-              <div className="flex items-center justify-between text-xs text-slate-400">
+              <div className="flex items-center justify-between text-xs text-slate-500">
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-500 text-white font-bold flex items-center justify-center text-xs">
                     {comment.author_name.charAt(0).toUpperCase()}
                   </div>
-                  <span className="font-semibold text-slate-200">{comment.author_name}</span>
+                  <span className="font-bold text-slate-900">{comment.author_name}</span>
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-slate-500">
+                <div className="flex items-center gap-1 text-[11px] text-slate-400">
                   <Clock className="w-3 h-3" />
                   <span>{formatDate(comment.created_at)}</span>
                 </div>
               </div>
-              <p className="text-sm text-slate-300 pl-9 leading-relaxed">{comment.content}</p>
+              <p className="text-sm text-slate-700 pl-9 leading-relaxed">{comment.content}</p>
             </div>
           ))
         )}

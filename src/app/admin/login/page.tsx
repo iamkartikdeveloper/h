@@ -34,19 +34,31 @@ export default function AdminLoginPage() {
       if (error) throw error;
 
       if (data?.user) {
-        // Check if user is an authorized admin in public.admin_users
-        const { data: adminRecord, error: adminErr } = await supabase
-          .from('admin_users')
-          .select('id, role')
-          .eq('user_id', data.user.id)
+        // Check if user has 'admin' or 'owner' role in public.profiles
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
           .single();
 
-        if (adminErr || !adminRecord) {
-          // If not in admin_users, let the user know they need the admin role
+        let isAuthorized = profile?.role === 'admin' || profile?.role === 'owner';
+
+        if (!isAuthorized) {
+          // Fallback check on admin_users table
+          const { data: adminRecord } = await supabase
+            .from('admin_users')
+            .select('role')
+            .eq('user_id', data.user.id)
+            .single();
+          if (adminRecord) isAuthorized = true;
+        }
+
+        if (!isAuthorized) {
           setErrorMsg(
-            'Your account is authenticated with Supabase, but is not yet registered in the "admin_users" table. Please insert your user ID into admin_users in Supabase SQL editor.'
+            'Access denied: Your account role is set to "user". Only users with the "admin" or "owner" role are permitted to access the admin portal.'
           );
           await supabase.auth.signOut();
+          router.push('/');
           return;
         }
 
@@ -61,25 +73,25 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#090d16] flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-indigo-600/15 blur-3xl rounded-full pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-indigo-100/60 blur-3xl rounded-full pointer-events-none" />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-xs text-slate-600 hover:text-slate-900 transition-colors mb-6 font-medium"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Public Website</span>
         </Link>
 
         <div className="flex flex-col items-center text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 border border-indigo-500/40 text-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-600/20">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center shadow-2xs">
             <Shield className="w-6 h-6" />
           </div>
-          <h2 className="text-2xl font-extrabold text-white tracking-tight">Admin Portal</h2>
-          <p className="text-xs text-slate-400">
+          <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Admin Portal</h2>
+          <p className="text-xs text-slate-500">
             Sign in with your authorized administrator credentials
           </p>
         </div>
@@ -87,7 +99,7 @@ export default function AdminLoginPage() {
         <div className="mt-8">
           <form
             onSubmit={handleLogin}
-            className="p-8 rounded-3xl bg-slate-900/80 border border-slate-800 space-y-5 backdrop-blur-xl shadow-2xl"
+            className="p-8 rounded-3xl bg-white border border-slate-200 space-y-5 shadow-xs"
           >
             <Input
               label="Admin Email *"
@@ -110,8 +122,8 @@ export default function AdminLoginPage() {
             />
 
             {errorMsg && (
-              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs leading-relaxed">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs leading-relaxed font-medium">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
                 <span>{errorMsg}</span>
               </div>
             )}
@@ -127,9 +139,9 @@ export default function AdminLoginPage() {
             </Button>
 
             {/* Bootstrap Instructions Accordion */}
-            <div className="pt-4 border-t border-slate-800 text-[11px] text-slate-400 space-y-2">
-              <div className="flex items-center gap-1.5 font-semibold text-slate-300">
-                <Terminal className="w-3.5 h-3.5 text-indigo-400" />
+            <div className="pt-4 border-t border-slate-100 text-[11px] text-slate-500 space-y-2">
+              <div className="flex items-center gap-1.5 font-bold text-slate-700">
+                <Terminal className="w-3.5 h-3.5 text-indigo-600" />
                 <span>First Time Admin Setup:</span>
               </div>
               <p className="leading-relaxed">
@@ -137,7 +149,7 @@ export default function AdminLoginPage() {
               </p>
               <p className="leading-relaxed">
                 2. Execute in SQL Editor:
-                <code className="block mt-1 p-2 rounded bg-slate-950 font-mono text-[10px] text-indigo-300 border border-slate-800 overflow-x-auto">
+                <code className="block mt-1 p-2 rounded bg-slate-100 font-mono text-[10px] text-indigo-700 border border-slate-200 overflow-x-auto">
                   INSERT INTO admin_users (user_id) VALUES ('YOUR-AUTH-USER-ID');
                 </code>
               </p>

@@ -125,18 +125,18 @@ export default function AdminCategoriesPage() {
   return (
     <div className="space-y-10">
       {/* Header */}
-      <div className="pb-6 border-b border-slate-800">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+      <div className="pb-6 border-b border-slate-200">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
           Categories &amp; Tags
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+        <p className="text-xs sm:text-sm text-slate-600 mt-1">
           Organize tutorials into searchable programming topics, languages, and frameworks.
         </p>
       </div>
 
       {errorMsg && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
           <span>{errorMsg}</span>
         </div>
       )}
@@ -145,9 +145,9 @@ export default function AdminCategoriesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Categories Section */}
         <div className="space-y-6">
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Layers className="w-4 h-4 text-indigo-400" />
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Layers className="w-4 h-4 text-indigo-600" />
               <span>Create Category</span>
             </h2>
 
@@ -178,16 +178,17 @@ export default function AdminCategoriesPage() {
             </form>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/40 overflow-hidden divide-y divide-slate-800/80">
+          <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden divide-y divide-slate-100">
             {categories.map((c) => (
-              <div key={c.id} className="p-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors">
+              <div key={c.id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
                 <div>
-                  <h4 className="text-xs font-semibold text-white">{c.name}</h4>
+                  <h4 className="text-xs font-semibold text-slate-900">{c.name}</h4>
                   <p className="text-[10px] text-slate-500 font-mono">/tutorials?category={c.slug}</p>
                 </div>
                 <button
                   onClick={() => handleDeleteCategory(c.id, c.name)}
-                  className="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                  className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                  title="Delete category"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -198,9 +199,9 @@ export default function AdminCategoriesPage() {
 
         {/* Tags Section */}
         <div className="space-y-6">
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
-            <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <TagIcon className="w-4 h-4 text-sky-400" />
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <TagIcon className="w-4 h-4 text-indigo-600" />
               <span>Create Tag</span>
             </h2>
 
@@ -226,20 +227,20 @@ export default function AdminCategoriesPage() {
             </form>
           </div>
 
-          <div className="p-6 rounded-2xl border border-slate-800 bg-slate-900/40 space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+          <div className="p-6 rounded-2xl border border-slate-200 bg-white shadow-sm space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600">
               Active Tags ({tags.length})
             </h3>
             <div className="flex flex-wrap gap-2">
               {tags.map((t) => (
                 <div
                   key={t.id}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-800/80 border border-slate-700/60 text-xs text-slate-200"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700"
                 >
                   <span>#{t.name}</span>
                   <button
                     onClick={() => handleDeleteTag(t.id, t.name)}
-                    className="text-slate-400 hover:text-rose-400 transition-colors ml-1"
+                    className="text-slate-400 hover:text-rose-600 transition-colors ml-1 font-bold"
                   >
                     ×
                   </button>
