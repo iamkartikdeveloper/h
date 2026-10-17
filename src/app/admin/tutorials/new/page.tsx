@@ -7,9 +7,11 @@ import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
+import { MarkdownEditor } from '@/components/ui/MarkdownEditor';
 import { MarkdownRenderer } from '@/components/public/MarkdownRenderer';
 import { YouTubeEmbed } from '@/components/ui/YouTubeEmbed';
 import { slugify } from '@/lib/utils/slugify';
+import { normalizeMarkdown } from '@/lib/utils/markdown';
 import { calculateReadingTime } from '@/lib/utils/reading-time';
 import { extractYouTubeId, getYouTubeThumbnail } from '@/lib/utils/youtube';
 import {
@@ -24,6 +26,7 @@ import {
   AlertCircle,
   CheckCircle2,
   Sparkles,
+  ShieldCheck,
 } from 'lucide-react';
 import { YouTubeIcon } from '@/components/ui/Icons';
 
@@ -45,6 +48,7 @@ export default function NewTutorialPage() {
   const [prerequisites, setPrerequisites] = useState('');
   const [readingTime, setReadingTime] = useState(8);
   const [isFeatured, setIsFeatured] = useState(false);
+  const [isVerified, setIsVerified] = useState(true);
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
 
   // SEO Fields
@@ -188,7 +192,7 @@ export default function NewTutorialPage() {
             title: title.trim(),
             slug: slug.trim(),
             description: description.trim() || null,
-            content: content.trim(),
+            content: normalizeMarkdown(content.trim()),
             youtube_url: youtubeUrl.trim() || null,
             thumbnail_url: thumbnailUrl.trim() || null,
             category_id: categoryId || null,
@@ -198,6 +202,7 @@ export default function NewTutorialPage() {
             seo_title: seoTitle.trim() || title.trim(),
             seo_description: seoDescription.trim() || description.trim() || null,
             is_featured: isFeatured,
+            is_verified: isVerified,
             status,
             published_at: publishedAt,
           },
@@ -446,22 +451,42 @@ export default function NewTutorialPage() {
           </div>
 
           {/* Markdown Content Editor */}
-          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-900">Tutorial Documentation (Markdown) *</h2>
-              <span className="text-xs text-slate-500 font-mono">
-                Supports headings, lists, code fences ```kotlin
-              </span>
-            </div>
-
-            <Textarea
-              rows={14}
-              placeholder={`# Tutorial Title\n\nWrite step-by-step instructions here...\n\n## 1. Add Dependencies\n\`\`\`kotlin\ndependencies {\n    implementation("com.google.android.gms:play-services-ads:23.0.0")\n}\n\`\`\``}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
+            <MarkdownEditor
               value={content}
-              onChange={handleContentChange}
-              className="font-mono text-xs"
+              onChange={setContent}
+              label="Tutorial Documentation (Markdown) *"
               required
             />
+          </div>
+
+          {/* Quality & Verification Assurance */}
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-4">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-emerald-600" />
+              <span>Verification System &amp; Quality Badge</span>
+            </h2>
+            <p className="text-xs text-slate-500">
+              Mark this tutorial as verified to give developers and students full confidence that the instructions and code have been tested and confirmed working.
+            </p>
+
+            <div className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-center justify-between gap-4">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold text-emerald-950 block">
+                  Verified &amp; Tested Tutorial
+                </span>
+                <span className="text-[11px] text-emerald-700 block">
+                  Displays official "✓ Verified &amp; Tested - Confirmed Working" badge on the tutorial page.
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                id="isVerified"
+                checked={isVerified}
+                onChange={(e) => setIsVerified(e.target.checked)}
+                className="w-5 h-5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+              />
+            </div>
           </div>
 
           {/* Code Snippets Builder */}

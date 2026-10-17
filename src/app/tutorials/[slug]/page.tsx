@@ -218,6 +218,12 @@ export default async function TutorialDetailPage({ params }: TutorialPageProps) 
                 Featured Guide
               </Badge>
             )}
+            {tutorial.is_verified !== false && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Verified &amp; Tested Guide</span>
+              </div>
+            )}
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -233,7 +239,10 @@ export default async function TutorialDetailPage({ params }: TutorialPageProps) 
               <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-500 text-white font-bold flex items-center justify-center text-[10px]">
                 K
               </div>
-              <span className="font-semibold text-slate-800">Kartik Sharma</span>
+              <span className="font-semibold text-slate-800 flex items-center gap-1">
+                <span>Kartik Sharma</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600" />
+              </span>
             </div>
             <div className="flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />

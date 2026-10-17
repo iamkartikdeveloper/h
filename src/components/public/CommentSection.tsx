@@ -4,10 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { Comment } from '@/types/database';
 import { formatDate } from '@/lib/utils/reading-time';
+import { isUserAdminOrOwner } from '@/lib/auth-helpers';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { MessageSquare, Send, CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import { MessageSquare, Send, CheckCircle2, AlertCircle, Clock, ShieldCheck } from 'lucide-react';
 
 export interface CommentSectionProps {
   tutorialId: string;
@@ -178,26 +179,35 @@ export function CommentSection({ tutorialId }: CommentSectionProps) {
             <p>No comments yet. Be the first to share your thoughts!</p>
           </div>
         ) : (
-          comments.map((comment) => (
-            <div
-              key={comment.id}
-              className="p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2 transition-colors hover:border-slate-300"
-            >
-              <div className="flex items-center justify-between text-xs text-slate-500">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-500 text-white font-bold flex items-center justify-center text-xs">
-                    {comment.author_name.charAt(0).toUpperCase()}
+          comments.map((comment) => {
+            const isVerifiedAuthor = isUserAdminOrOwner(comment.author_email);
+            return (
+              <div
+                key={comment.id}
+                className="p-5 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2 transition-colors hover:border-slate-300"
+              >
+                <div className="flex items-center justify-between text-xs text-slate-500">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-sky-500 text-white font-bold flex items-center justify-center text-xs">
+                      {comment.author_name.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="font-bold text-slate-900">{comment.author_name}</span>
+                    {isVerifiedAuthor && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-1.5 py-0.5 rounded-full">
+                        <ShieldCheck className="w-3 h-3 text-indigo-600" />
+                        Verified Author
+                      </span>
+                    )}
                   </div>
-                  <span className="font-bold text-slate-900">{comment.author_name}</span>
+                  <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                    <Clock className="w-3 h-3" />
+                    <span>{formatDate(comment.created_at)}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-slate-400">
-                  <Clock className="w-3 h-3" />
-                  <span>{formatDate(comment.created_at)}</span>
-                </div>
+                <p className="text-sm text-slate-700 pl-9 leading-relaxed">{comment.content}</p>
               </div>
-              <p className="text-sm text-slate-700 pl-9 leading-relaxed">{comment.content}</p>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

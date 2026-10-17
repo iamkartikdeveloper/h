@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { isUserAdminOrOwner } from '@/lib/auth-helpers';
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -34,7 +35,16 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  // Use getUser() to cryptographically verify auth state
+  // Helper to create a redirect that preserves any refreshed session cookies
+  const createRedirectResponse = (url: URL) => {
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  };
+
+  // Cryptographically verify auth state via Supabase Auth
   let user = null;
   try {
     const {
@@ -50,40 +60,53 @@ export async function updateSession(request: NextRequest) {
 
   // 1. ADMIN ROUTES PROTECTION (/admin/*)
   if (pathname.startsWith('/admin')) {
-    // Admin login page handler
+    // Admin login page handler (/admin/login)
     if (pathname === '/admin/login') {
       if (user) {
-        // Check role
-        let role = 'user';
-        try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .maybeSingle();
-          if (profile?.role) role = profile.role;
-          if (role !== 'admin' && role !== 'owner') {
+        // Determine role via admin helper, profiles table, and admin_users table
+        let authorized = isUserAdminOrOwner(user.email);
+
+        if (!authorized) {
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', user.id)
+              .maybeSingle();
+
+            if (profile?.role === 'admin' || profile?.role === 'owner') {
+              authorized = true;
+            }
+          } catch {}
+        }
+
+        if (!authorized) {
+          try {
             const { data: adminRecord } = await supabase
               .from('admin_users')
               .select('role')
               .eq('user_id', user.id)
               .maybeSingle();
-            if (adminRecord) role = 'admin';
-          }
-        } catch {}
 
-        if (role === 'admin' || role === 'owner') {
+            if (adminRecord) {
+              authorized = true;
+            }
+          } catch {}
+        }
+
+        if (authorized) {
           // Authorized admin/owner -> redirect to admin dashboard
           const url = request.nextUrl.clone();
           url.pathname = '/admin';
-          return NextResponse.redirect(url);
+          return createRedirectResponse(url);
         } else {
-          // Normal user -> redirect to home page
+          // Normal user -> redirect to profile page
           const url = request.nextUrl.clone();
-          url.pathname = '/';
-          return NextResponse.redirect(url);
+          url.pathname = '/profile';
+          return createRedirectResponse(url);
         }
       }
+
       // Unauthenticated -> allow access to admin login page
       return supabaseResponse;
     }
@@ -92,34 +115,46 @@ export async function updateSession(request: NextRequest) {
     if (!user) {
       const url = request.nextUrl.clone();
       url.pathname = '/admin/login';
-      return NextResponse.redirect(url);
+      return createRedirectResponse(url);
     }
 
-    // Check user's role in public.profiles with fallback to admin_users
-    let role = 'user';
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .maybeSingle();
-      if (profile?.role) role = profile.role;
-      if (role !== 'admin' && role !== 'owner') {
+    // Verify admin or owner authorization
+    let authorized = isUserAdminOrOwner(user.email);
+
+    if (!authorized) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profile?.role === 'admin' || profile?.role === 'owner') {
+          authorized = true;
+        }
+      } catch {}
+    }
+
+    if (!authorized) {
+      try {
         const { data: adminRecord } = await supabase
           .from('admin_users')
           .select('role')
           .eq('user_id', user.id)
           .maybeSingle();
-        if (adminRecord) role = 'admin';
-      }
-    } catch {}
 
-    // Strict rule: ONLY 'admin' or 'owner' can access admin dashboard
-    if (role !== 'admin' && role !== 'owner') {
-      // Normal 'user' is redirected directly to home page
+        if (adminRecord) {
+          authorized = true;
+        }
+      } catch {}
+    }
+
+    // Only authorized admin or owner can access admin dashboard
+    if (!authorized) {
+      // Normal 'user' is redirected safely to their profile page
       const url = request.nextUrl.clone();
-      url.pathname = '/';
-      return NextResponse.redirect(url);
+      url.pathname = '/profile';
+      return createRedirectResponse(url);
     }
 
     return supabaseResponse;
@@ -131,7 +166,7 @@ export async function updateSession(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
       url.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(url);
+      return createRedirectResponse(url);
     }
     return supabaseResponse;
   }
@@ -141,7 +176,7 @@ export async function updateSession(request: NextRequest) {
     if (user) {
       const url = request.nextUrl.clone();
       url.pathname = '/profile';
-      return NextResponse.redirect(url);
+      return createRedirectResponse(url);
     }
     return supabaseResponse;
   }

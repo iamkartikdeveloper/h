@@ -20,6 +20,8 @@ import {
   ShieldCheck,
   CheckCircle2,
   AlertCircle,
+  Database,
+  Terminal,
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -36,6 +38,7 @@ export default function AdminDashboardPage() {
   const [recentTutorials, setRecentTutorials] = useState<any[]>([]);
   const [recentMessages, setRecentMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tableSetupNeeded, setTableSetupNeeded] = useState(false);
 
   useEffect(() => {
     fetchDashboardData();
@@ -46,10 +49,14 @@ export default function AdminDashboardPage() {
       setLoading(true);
 
       // Fetch tutorials counts
-      const { data: allTutorials } = await supabase
+      const { data: allTutorials, error: tutErr } = await supabase
         .from('tutorials')
         .select('id, title, slug, status, published_at, created_at, difficulty')
         .order('created_at', { ascending: false });
+
+      if (tutErr && (tutErr.code === 'PGRST205' || tutErr.message.includes('schema cache'))) {
+        setTableSetupNeeded(true);
+      }
 
       const totalTutorials = allTutorials?.length || 0;
       const publishedTutorials = allTutorials?.filter((t) => t.status === 'published').length || 0;
@@ -125,6 +132,28 @@ export default function AdminDashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Database Setup Notice if tables are not initialized in Supabase yet */}
+      {tableSetupNeeded && (
+        <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 space-y-3 shadow-xs">
+          <div className="flex items-center gap-2 font-bold text-sm text-amber-950">
+            <Database className="w-4 h-4 text-amber-600" />
+            <span>Supabase Content Tables Initialization Required</span>
+          </div>
+          <p className="text-xs leading-relaxed text-amber-800">
+            Authentication and user profiles are active! However, content tables (<code className="font-mono text-amber-900 bg-amber-100 px-1 py-0.5 rounded">tutorials</code>, <code className="font-mono text-amber-900 bg-amber-100 px-1 py-0.5 rounded">projects</code>, <code className="font-mono text-amber-900 bg-amber-100 px-1 py-0.5 rounded">categories</code>) have not yet been created in your Supabase project.
+          </p>
+          <div className="p-3 bg-white/80 rounded-xl border border-amber-200 text-xs font-mono space-y-1">
+            <div className="flex items-center gap-1.5 text-slate-700 font-semibold">
+              <Terminal className="w-3.5 h-3.5 text-indigo-600" />
+              <span>To create all tables and populate sample tutorials:</span>
+            </div>
+            <p className="text-[11px] text-slate-600 font-sans">
+              Open your <strong>Supabase Dashboard &gt; SQL Editor</strong>, paste the contents of <code className="text-indigo-600 font-mono font-bold">supabase/RUN_IN_SUPABASE_SQL_EDITOR.sql</code>, and click <strong>Run</strong>.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Real Statistics Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

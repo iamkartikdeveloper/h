@@ -72,9 +72,9 @@ function SignupContent() {
       if (error) throw error;
 
       if (data?.session) {
-        // Auto-logged in
-        router.push(redirectUrl);
-        router.refresh();
+        // Auto-logged in: navigate with cookies preserved
+        window.location.href = redirectUrl;
+        return;
       } else if (data?.user) {
         // If user already exists, Supabase returns empty identities array
         if (data.user.identities && data.user.identities.length === 0) {

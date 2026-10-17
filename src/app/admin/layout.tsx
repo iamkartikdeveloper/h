@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
+import { isUserAdminOrOwner } from '@/lib/auth-helpers';
 import {
   LayoutDashboard,
   BookOpen,
@@ -17,6 +18,7 @@ import {
   LogOut,
   ExternalLink,
   Shield,
+  ShieldCheck,
   Loader2,
   Menu,
   X,
@@ -25,7 +27,6 @@ import { cn } from '@/lib/utils/cn';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
   const isLoginPage = pathname === '/admin/login';
 
   const [loading, setLoading] = useState(true);
@@ -40,9 +41,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     checkAdmin();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
-        router.push('/admin/login');
+        window.location.href = '/admin/login';
       } else {
         checkAdmin();
       }
@@ -60,7 +61,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       } = await supabase.auth.getSession();
 
       if (!session) {
-        router.push('/admin/login');
+        window.location.href = '/admin/login';
+        return;
+      }
+
+      // Check if user is pre-authorized admin/owner
+      if (isUserAdminOrOwner(session.user.email)) {
+        setIsAdmin(true);
+        setLoading(false);
         return;
       }
 
@@ -73,28 +81,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       if (profileRecord?.role === 'admin' || profileRecord?.role === 'owner') {
         setIsAdmin(true);
-      } else if (profileRecord?.role === 'user') {
-        // Normal 'user' role redirected to home page
-        router.push('/');
+        setLoading(false);
         return;
-      } else {
-        // Fallback check on admin_users table
-        const { data: legacyAdmin } = await supabase
-          .from('admin_users')
-          .select('role')
-          .eq('user_id', session.user.id)
-          .maybeSingle();
-
-        if (legacyAdmin) {
-          setIsAdmin(true);
-        } else {
-          router.push('/');
-          return;
-        }
       }
+
+      // Fallback check on admin_users table
+      const { data: legacyAdmin } = await supabase
+        .from('admin_users')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+
+      if (legacyAdmin) {
+        setIsAdmin(true);
+        setLoading(false);
+        return;
+      }
+
+      // Unauthenticated / non-admin user redirected safely to their user profile
+      window.location.href = '/profile';
     } catch (err) {
       console.error('Admin check error:', err);
-      router.push('/');
+      window.location.href = '/profile';
     } finally {
       setLoading(false);
     }
@@ -102,7 +110,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push('/admin/login');
+    window.location.href = '/admin/login';
   };
 
   if (isLoginPage) {
@@ -120,6 +128,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { href: '/admin', label: 'Dashboard Overview', icon: LayoutDashboard },
+    { href: '/admin/verification', label: 'Verification Center', icon: ShieldCheck },
     { href: '/admin/tutorials', label: 'All Tutorials', icon: BookOpen },
     { href: '/admin/tutorials/new', label: 'New Tutorial', icon: PlusCircle },
     { href: '/admin/projects', label: 'Projects', icon: FolderGit2 },

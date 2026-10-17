@@ -52,9 +52,9 @@ function LoginContent() {
       if (error) throw error;
 
       if (data?.session) {
-        // Redirect to intended destination or profile
-        router.push(redirectUrl);
-        router.refresh();
+        // Use window.location.href so the freshly synchronized SSR cookies are passed directly to the server proxy
+        window.location.href = redirectUrl;
+        return;
       }
     } catch (err: any) {
       console.error('Login error:', err);

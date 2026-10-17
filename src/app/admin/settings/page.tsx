@@ -71,6 +71,19 @@ export default function AdminSettingsPage() {
         setLinkedin(soc.linkedin || '');
         setTwitter(soc.twitter || '');
         setEmail(soc.email || '');
+      } else {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session?.user) {
+          setProfileId(session.user.id);
+          setDisplayName(
+            session.user.user_metadata?.full_name ||
+              session.user.email?.split('@')[0] ||
+              'Kartik Sharma'
+          );
+          setEmail(session.user.email || '');
+        }
       }
 
       // Load Site Settings
@@ -115,19 +128,33 @@ export default function AdminSettingsPage() {
         email: email.trim() || undefined,
       };
 
-      // 1. Update Profile
-      if (profileId) {
+      // 1. Update/Upsert Profile
+      let targetId = profileId;
+      if (!targetId) {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session?.user) {
+          targetId = session.user.id;
+          setProfileId(session.user.id);
+        }
+      }
+
+      if (targetId) {
         const { error: profErr } = await supabase
           .from('profiles')
-          .update({
-            display_name: displayName.trim(),
-            bio: bio.trim(),
-            avatar_url: avatarUrl.trim(),
-            skills: skillsArray,
-            social_links: socialLinks,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', profileId);
+          .upsert(
+            {
+              id: targetId,
+              display_name: displayName.trim(),
+              bio: bio.trim(),
+              avatar_url: avatarUrl.trim(),
+              skills: skillsArray,
+              social_links: socialLinks,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'id' }
+          );
 
         if (profErr) throw profErr;
       }

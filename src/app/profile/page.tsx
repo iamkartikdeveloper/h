@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
+import { isUserAdminOrOwner } from '@/lib/auth-helpers';
 import { Profile } from '@/types/database';
 import { MOCK_PROFILE } from '@/lib/mock-data';
 import { Button } from '@/components/ui/Button';
@@ -47,6 +48,11 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [skills, setSkills] = useState('');
 
+  // Verification System state
+  const [isVerified, setIsVerified] = useState(false);
+  const [sendingVerify, setSendingVerify] = useState(false);
+  const [verifyNotice, setVerifyNotice] = useState<string | null>(null);
+
   useEffect(() => {
     loadUserProfile();
   }, []);
@@ -72,6 +78,9 @@ export default function ProfilePage() {
 
       setUserEmail(session.user.email || '');
 
+      const isOwnerOrAdmin = isUserAdminOrOwner(session.user.email);
+      const emailConfirmed = !!session.user.email_confirmed_at;
+
       // Fetch user profile from public.profiles
       const { data, error } = await supabase
         .from('profiles')
@@ -83,25 +92,39 @@ export default function ProfilePage() {
         console.warn('Profile fetch warning:', error.message);
       }
 
+      const verified = isOwnerOrAdmin || emailConfirmed || !!data?.is_verified;
+      setIsVerified(verified);
+
       if (data) {
-        setProfile(data);
+        const effectiveRole = isOwnerOrAdmin
+          ? (data.role === 'admin' ? 'admin' : 'owner')
+          : (data.role || 'user');
+
+        const resolvedProfile: Profile = {
+          ...data,
+          role: effectiveRole,
+          is_verified: verified,
+        };
+        setProfile(resolvedProfile);
         setDisplayName(data.display_name || '');
         setBio(data.bio || '');
         setSkills((data.skills || []).join(', '));
       } else {
-        // Provision fallback object if trigger was delayed
+        // Provision fallback object if trigger was delayed or profile row not created yet
+        const effectiveRole = isOwnerOrAdmin ? 'owner' : 'user';
         const fallbackProfile: Profile = {
           id: session.user.id,
           email: session.user.email,
           display_name:
             session.user.user_metadata?.full_name ||
             session.user.email?.split('@')[0] ||
-            'Developer',
-          username: session.user.email?.split('@')[0] || 'dev_user',
+            'Kartik Sharma',
+          username: session.user.email?.split('@')[0] || 'kartik',
           avatar_url: session.user.user_metadata?.avatar_url || null,
-          role: 'user',
+          role: effectiveRole,
+          is_verified: verified,
           bio: 'Passionate developer learning mobile & web engineering.',
-          skills: ['Kotlin', 'Android', 'Next.js'],
+          skills: ['Kotlin', 'Android', 'Next.js', 'Supabase'],
           social_links: {},
           created_at: session.user.created_at || new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -110,6 +133,26 @@ export default function ProfilePage() {
         setDisplayName(fallbackProfile.display_name);
         setBio(fallbackProfile.bio || '');
         setSkills(fallbackProfile.skills.join(', '));
+
+        // Auto-create their profile row in public.profiles
+        try {
+          await supabase.from('profiles').upsert(
+            {
+              id: session.user.id,
+              email: session.user.email,
+              display_name: fallbackProfile.display_name,
+              username: fallbackProfile.username,
+              role: effectiveRole,
+              is_verified: verified,
+              bio: fallbackProfile.bio,
+              skills: fallbackProfile.skills,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'id' }
+          );
+        } catch (insertErr) {
+          console.warn('Auto profile provisioning notice:', insertErr);
+        }
       }
     } catch (err: any) {
       console.error('Profile loading error:', err);
@@ -138,16 +181,21 @@ export default function ProfilePage() {
       } = await supabase.auth.getSession();
 
       if (session?.user) {
-        // Update user's own profile via RLS
+        // Update or upsert user's own profile via RLS
         const { error } = await supabase
           .from('profiles')
-          .update({
-            display_name: displayName.trim(),
-            bio: bio.trim(),
-            skills: skillsArray,
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', session.user.id);
+          .upsert(
+            {
+              id: session.user.id,
+              email: session.user.email,
+              display_name: displayName.trim(),
+              bio: bio.trim(),
+              skills: skillsArray,
+              role: profile.role || 'user',
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: 'id' }
+          );
 
         if (error) throw error;
       }
@@ -175,11 +223,65 @@ export default function ProfilePage() {
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
-      router.push('/login');
-      router.refresh();
+      window.location.href = '/login';
     } catch (err) {
       console.error('Sign out error:', err);
-      router.push('/');
+      window.location.href = '/';
+    }
+  };
+
+  const handleSendVerificationEmail = async () => {
+    if (!userEmail) return;
+    try {
+      setSendingVerify(true);
+      setErrorMsg(null);
+      setVerifyNotice(null);
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: userEmail,
+      });
+
+      if (error) throw error;
+      setVerifyNotice('Verification confirmation email has been dispatched to your inbox!');
+    } catch (err: any) {
+      console.error('Verification resend error:', err);
+      setErrorMsg(err.message || 'Failed to dispatch verification email.');
+    } finally {
+      setSendingVerify(false);
+    }
+  };
+
+  const handleInstantVerify = async () => {
+    try {
+      setSendingVerify(true);
+      setErrorMsg(null);
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session?.user) {
+        await supabase
+          .from('profiles')
+          .update({
+            is_verified: true,
+            verified_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', session.user.id);
+
+        setIsVerified(true);
+        if (profile) {
+          setProfile({ ...profile, is_verified: true });
+        }
+        setVerifyNotice('Account successfully verified! Verified Developer badge is now active.');
+      }
+    } catch (err: any) {
+      console.error('Instant verify error:', err);
+      setErrorMsg('Failed to verify account.');
+    } finally {
+      setSendingVerify(false);
     }
   };
 
@@ -251,7 +353,20 @@ export default function ProfilePage() {
                 ) : (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
                     <User className="w-3.5 h-3.5 text-slate-500" />
-                    <span>Standard Member (Role: user)</span>
+                    <span>Standard Member</span>
+                  </span>
+                )}
+
+                {/* Verification Status Badge */}
+                {isVerified ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Verified Developer</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 shadow-2xs">
+                    <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Unverified Account</span>
                   </span>
                 )}
               </div>
@@ -376,6 +491,74 @@ export default function ProfilePage() {
             <p className="text-xs text-slate-600 leading-relaxed">
               Row Level Security (RLS) is active on your profile. Only your authenticated user ID is authorized to update these records.
             </p>
+          </div>
+
+          {/* Verification System Box */}
+          <div className="p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>Verification System</span>
+              </h3>
+              {isVerified ? (
+                <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  VERIFIED
+                </span>
+              ) : (
+                <span className="text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                  UNVERIFIED
+                </span>
+              )}
+            </div>
+
+            {verifyNotice && (
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                <span>{verifyNotice}</span>
+              </div>
+            )}
+
+            {isVerified ? (
+              <div className="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-xs text-emerald-950 space-y-1">
+                <span className="font-bold flex items-center gap-1.5 text-emerald-800">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Developer Identity Confirmed</span>
+                </span>
+                <p className="text-[11px] text-emerald-700 leading-relaxed">
+                  Your email is confirmed and your profile is verified across the platform. You have full access to developer discussions and tutorials.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Your email address is currently unverified. Verify your account to activate your official developer badge and unlock full community privileges.
+                </p>
+
+                <div className="space-y-2 pt-1">
+                  <Button
+                    size="sm"
+                    variant="primary"
+                    className="w-full"
+                    onClick={handleInstantVerify}
+                    isLoading={sendingVerify}
+                    leftIcon={<CheckCircle2 className="w-3.5 h-3.5" />}
+                  >
+                    Instant Verify Account
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-xs"
+                    onClick={handleSendVerificationEmail}
+                    disabled={sendingVerify}
+                    leftIcon={<Mail className="w-3.5 h-3.5" />}
+                  >
+                    Resend Email Link
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

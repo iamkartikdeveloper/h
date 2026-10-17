@@ -15,9 +15,11 @@ import {
   Menu,
   X,
   Shield,
+  ShieldCheck,
   ExternalLink,
   LogIn,
 } from 'lucide-react';
+import { isUserAdminOrOwner } from '@/lib/auth-helpers';
 import { YouTubeIcon } from '@/components/ui/Icons';
 
 export function Navbar() {
@@ -131,8 +133,15 @@ export function Navbar() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs font-semibold text-slate-800 transition-colors"
               title="View Profile"
             >
-              <User className="w-3.5 h-3.5 text-indigo-600" />
+              {isUserAdminOrOwner(user.email) || user.email_confirmed_at ? (
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+              ) : (
+                <User className="w-3.5 h-3.5 text-indigo-600" />
+              )}
               <span>Profile</span>
+              {(isUserAdminOrOwner(user.email) || user.email_confirmed_at) && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              )}
             </Link>
           ) : (
             <Link

@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 
 const supabaseUrl =
   process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -17,11 +17,14 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-// Client-side singleton
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-});
+/**
+ * Creates or retrieves the singleton client-side Supabase client.
+ * Using @supabase/ssr createBrowserClient ensures authentication cookies
+ * are synchronized automatically with the Next.js server proxy / middleware.
+ */
+export function createClient() {
+  return createBrowserClient(supabaseUrl, supabaseAnonKey);
+}
+
+// Client-side singleton export for component usage
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);

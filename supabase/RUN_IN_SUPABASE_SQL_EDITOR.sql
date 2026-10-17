@@ -768,5 +768,26 @@ Complete platform enabling content creators to publish programming tutorials, co
     'published'
 ) ON CONFLICT (slug) DO NOTHING;
 
+-- ----------------------------------------------------
+-- VERIFICATION SYSTEM MIGRATION
+-- ----------------------------------------------------
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ DEFAULT NULL;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS verification_badge TEXT DEFAULT 'Developer';
+
+ALTER TABLE public.tutorials ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT TRUE;
+ALTER TABLE public.tutorials ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ DEFAULT NOW();
+
+-- Auto-verify owner / admin profiles
+UPDATE public.profiles
+SET is_verified = TRUE, verified_at = NOW(), verification_badge = 'Lead Engineer'
+WHERE email IN ('kartiksharma20081186@gmail.com', 'admin@kartik.dev') OR role IN ('admin', 'owner');
+
+-- Auto-verify published tutorials
+UPDATE public.tutorials
+SET is_verified = TRUE, verified_at = NOW()
+WHERE status = 'published';
+
 -- Output confirmation
-SELECT 'SUPABASE DATABASE SETUP COMPLETED SUCCESSFULLY!' AS status;
+SELECT 'SUPABASE DATABASE SETUP & VERIFICATION SYSTEM COMPLETED SUCCESSFULLY!' AS status;
+

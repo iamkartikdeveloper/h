@@ -17,6 +17,9 @@ export interface Profile {
   avatar_url: string | null;
   role: UserRole;
   skills: string[];
+  is_verified?: boolean;
+  verified_at?: string | null;
+  verification_badge?: string | null;
   social_links: {
     youtube?: string;
     github?: string;
@@ -68,6 +71,8 @@ export interface Tutorial {
   seo_description: string | null;
   og_image_url: string | null;
   is_featured: boolean;
+  is_verified?: boolean;
+  verification_badge?: string | null;
   status: 'draft' | 'published' | 'scheduled' | 'archived';
   published_at: string | null;
   created_at: string;
