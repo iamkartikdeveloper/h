@@ -31,14 +31,16 @@ export default async function HomePage() {
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .single();
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
 
   // Fetch Website Settings
   const { data: siteSettings } = await supabase
     .from('website_settings')
     .select('setting_value')
     .eq('setting_key', 'site_config')
-    .single();
+    .maybeSingle();
 
   // Fetch Featured & Latest Published Tutorials
   const { data: tutorials } = await supabase

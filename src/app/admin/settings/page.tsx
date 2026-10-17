@@ -52,7 +52,12 @@ export default function AdminSettingsPage() {
       setLoading(true);
 
       // Load Profile
-      const { data: profile } = await supabase.from('profiles').select('*').single();
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
       if (profile) {
         setProfileId(profile.id);
         setDisplayName(profile.display_name || '');
@@ -73,7 +78,7 @@ export default function AdminSettingsPage() {
         .from('website_settings')
         .select('*')
         .eq('setting_key', 'site_config')
-        .single();
+        .maybeSingle();
 
       if (siteConfig?.setting_value) {
         const val = siteConfig.setting_value;

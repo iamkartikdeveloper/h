@@ -77,9 +77,9 @@ export default function ProfilePage() {
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         console.warn('Profile fetch warning:', error.message);
       }
 

@@ -69,7 +69,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         .from('profiles')
         .select('role')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (profileRecord?.role === 'admin' || profileRecord?.role === 'owner') {
         setIsAdmin(true);
@@ -83,7 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           .from('admin_users')
           .select('role')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (legacyAdmin) {
           setIsAdmin(true);

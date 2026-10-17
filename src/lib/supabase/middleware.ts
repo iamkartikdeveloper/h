@@ -9,13 +9,13 @@ export async function updateSession(request: NextRequest) {
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
     process.env.NEXTPUBLICSUPABASE_URL ||
-    'https://hfsflkizdbgkauebjamu.supabase.co';
+    'https://igrritzxmfjymshjdphy.supabase.co';
 
   const supabaseAnonKey =
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
     process.env.NEXTPUBLICSUPABASEPUBLISHABLEKEY ||
-    'sbpublishablePEPd8cdTE5EKExCf1GzdAA_YX4Vop6D';
+    'sb_publishable_sJj6tpWldPBL8GDtJUtYLA_NQ9G9jXf';
 
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
@@ -60,8 +60,16 @@ export async function updateSession(request: NextRequest) {
             .from('profiles')
             .select('role')
             .eq('id', user.id)
-            .single();
+            .maybeSingle();
           if (profile?.role) role = profile.role;
+          if (role !== 'admin' && role !== 'owner') {
+            const { data: adminRecord } = await supabase
+              .from('admin_users')
+              .select('role')
+              .eq('user_id', user.id)
+              .maybeSingle();
+            if (adminRecord) role = 'admin';
+          }
         } catch {}
 
         if (role === 'admin' || role === 'owner') {
@@ -87,15 +95,23 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
 
-    // Check user's role in public.profiles
+    // Check user's role in public.profiles with fallback to admin_users
     let role = 'user';
     try {
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       if (profile?.role) role = profile.role;
+      if (role !== 'admin' && role !== 'owner') {
+        const { data: adminRecord } = await supabase
+          .from('admin_users')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        if (adminRecord) role = 'admin';
+      }
     } catch {}
 
     // Strict rule: ONLY 'admin' or 'owner' can access admin dashboard

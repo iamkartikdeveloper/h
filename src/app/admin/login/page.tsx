@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
           .from('profiles')
           .select('role')
           .eq('id', data.user.id)
-          .single();
+          .maybeSingle();
 
         let isAuthorized = profile?.role === 'admin' || profile?.role === 'owner';
 
@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
             .from('admin_users')
             .select('role')
             .eq('user_id', data.user.id)
-            .single();
+            .maybeSingle();
           if (adminRecord) isAuthorized = true;
         }
 

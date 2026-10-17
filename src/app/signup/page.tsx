@@ -76,9 +76,17 @@ function SignupContent() {
         router.push(redirectUrl);
         router.refresh();
       } else if (data?.user) {
+        // If user already exists, Supabase returns empty identities array
+        if (data.user.identities && data.user.identities.length === 0) {
+          setErrorMsg(
+            'An account with this email already exists. Please sign in below with your credentials.'
+          );
+          return;
+        }
+
         // Confirmation email required or user created
         setSuccessMsg(
-          'Your account has been registered! If confirmation is required, please check your inbox. You can now sign in.'
+          'Your account has been registered! If confirmation is required, please check your inbox. Redirecting to login...'
         );
         setTimeout(() => {
           router.push(`/login?registered=true${redirectUrl !== '/profile' ? `&redirect=${encodeURIComponent(redirectUrl)}` : ''}`);
@@ -86,7 +94,16 @@ function SignupContent() {
       }
     } catch (err: any) {
       console.error('Registration error:', err);
-      setErrorMsg(err.message || 'Failed to create account.');
+      const msg = err.message || '';
+      if (msg.toLowerCase().includes('already registered')) {
+        setErrorMsg('An account with this email already exists. Please sign in below.');
+      } else if (msg.toLowerCase().includes('gateway timeout')) {
+        setErrorMsg(
+          'Supabase email confirmation service timed out. If you already registered before, please sign in directly.'
+        );
+      } else {
+        setErrorMsg(msg || 'Failed to create account.');
+      }
     } finally {
       setLoading(false);
     }

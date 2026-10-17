@@ -31,7 +31,9 @@ export default async function AboutPage() {
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .single();
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
 
   const skills = profile?.skills || [
     'Android Development',
